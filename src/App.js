@@ -17,143 +17,155 @@ const Navigation = () => (
     <Link to="/about">About</Link> 
   </nav> 
 ); 
-
+  
 // StreamList Page (Homepage) 
-const StreamList = ({ onAdd, movies, onToggleWatched, onRateMovie }) => ( 
+const StreamList = ({ onAdd, movies, onToggleWatched, onRateMovie, onDelete }) => ( 
   <div> 
-    <h1 style={{ marginBottom: '20px' }}>🎬 Movie Finder</h1> 
+    {/* StreamList Title*/}
+    <h1 style ={{ textAlign: 'center', fontSize: '3rem', marginBottom: '30px'}}>
+      StreamList
+    </h1>
+    {/* Movie Finder Title*/}
+    <h2 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '20px' }}>
+      🎬 Movie Finder
+    </h2>
+    {/* Search Box*/} 
+    <div style={{display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
     <MovieSearch onAdd={onAdd} /> 
+    </div>
+    {/* Watchlist Section*/}
     {movies.length > 0 && ( 
       <div style={{ marginTop: '40px' }}> 
-        <h2>📽️ Your Watchlist</h2> 
-        <ul style={{ listStyle: 'none', padding: 0 }}> 
+        <h3 style={{ textAlign: 'center', fontSize: '2rem', marginBottom: '20px'}}>
+          📽️ Your Watchlist
+          </h3>
+
+          <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '20px',
+            padding: '0 40px',
+          }} 
+          >
           {movies.map(movie => ( 
-            <li key={movie.id} movie={movie} onToggleWatched={onToggleWatched} onRateMovie={onRateMovie} style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}> 
+            <div
+            key={movie.id} 
+            style={{ 
+              display: 'flex',
+              backgroundColor: '#1e1e1e',
+              padding: '15px',
+              borderRadius: '8px',
+              alignItems: 'center'
+              }}
+              > 
               {movie.poster && ( 
-                <img src={movie.poster} alt={movie.title} style={{ width: '80px', marginRight: '20px', borderRadius: '4px' }} /> 
+                <img 
+                src={movie.poster} 
+                alt={movie.title} 
+                style={{ width: '80px', marginRight: '20px', borderRadius: '4px' }}
+                 /> 
               )} 
               <div> 
                 <strong>{movie.title}</strong> 
-                <div style={{ fontSize: '0.9em', color: '#ccc' }}>TMDB Rating: {movie.tmdbRating}</div> 
-                <div style={{ marginTop: '8px' }}>
-                  <label>
-                    Watched:
-                    <input
-                    type="checkbox"
-                    checked={movie.watched}
-                    onChange={() => onToggleWatched(movie.id)}
-                    />{' '}
-                  </label>
-                </div>
-                <div>
-                  Your Rating: {' '}
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                    key={star}
-                    style={{
-                      cursor: 'pointer',
-                      color: star <= movie.userRating ? 'gold' : '#555',
-                      fontSize: '20px'
-                    }}
-                    onClick={() => onRateMovie (movie.id, star)}
-                    >
+                <div style={{ fontSize: '0.9em', color: '#ccc' }}>
+                  TMDB Rating: {movie.tmdbRating}
+                  </div> 
+                <div style={{ marginTop: '8px' }}> 
+                  <label> 
+                    Watched: 
+                    <input 
+                      type="checkbox" 
+                      checked={movie.watched} 
+                      onChange={() => onToggleWatched(movie.id)} 
+                      style={{ marginLeft: '8px' }}
+                    /> 
+                  </label> 
+                </div> 
+                <div style={{ marginTop: '8px'}}>
+                  Your Rating:{' '} 
+                  {[1, 2, 3, 4, 5].map((star) => ( 
+                    <span 
+                      key={star} 
+                      style={{ 
+                        cursor: 'pointer', 
+                        color: star <= movie.userRating ? 'gold' : '#555', 
+                        fontSize: '20px' 
+                      }} 
+                      onClick={() => onRateMovie(movie.id, star)} 
+                    > 
                       ★ 
-                    </span>
-                  ))}
-                </div>
-              </div> 
-            </li> 
-          ))} 
-        </ul> 
-      </div> 
-    )} 
-  </div> 
-); 
-
-function Home({ items, addItem, clearItems, toggleWatched, setUserRating }) { 
-  return ( 
-    <section> 
-      <MovieSearch onAdd={addItem} /> 
-      <button onClick={clearItems} style={{ marginBottom: '20px' }}>Clear All</button> 
-      <ul style={{ padding: 0 }}> 
-        {items.map((item) => ( 
-          <li key={item.id} className="item-row"> 
-            {item.poster && ( 
-              <img 
-                src={item.poster} 
-                alt={item.title} 
-                style={{ 
-                  width: '80px', 
-                  height: '120px', 
-                  marginRight: '16px', 
-                  borderRadius: '4px' 
-                }} 
-              /> 
-            )} 
-            <div style={{ flex: 1 }}> 
-              <h3>{item.title}</h3> 
-              <p>TMDb Rating: {item.tmdbRating} / 10</p> 
-              <p> 
-                Watched: <strong>{item.watched ? 'Yes' : 'No'}</strong> 
+                    </span> 
+                  ))} 
+                </div> 
                 <button 
-                  onClick={() => toggleWatched(item.id)} 
-                  style={{ marginLeft: '10px' }} 
+                  onClick={() => onDelete(movie.id)} 
+                  style={{ 
+                    marginTop: '10px', 
+                    backgroundColor: '#ff4d4d', 
+                    color: '#fff', 
+                    border: 'none', 
+                    padding: '6px 12px', 
+                    borderRadius: '4px', 
+                    cursor: 'pointer' 
+                  }} 
                 > 
-                  Toggle 
+                  <i className="fas fa-trash-alt"></i> Delete 
                 </button> 
-              </p> 
-              <div> 
-                Your Rating: 
-                {[1, 2, 3, 4, 5].map((star) => ( 
-                  <span 
-                    key={star} 
-                    onClick={() => setUserRating(item.id, star)} 
-                    style={{ 
-                      cursor: 'pointer', 
-                      color: item.userRating >= star ? '#fbbf24' : '#ccc', 
-                      fontSize: '20px', 
-                      marginLeft: '4px' 
-                    }} 
-                  > 
-                    ★ 
-                  </span> 
-                ))} 
               </div> 
             </div> 
-          </li> 
-        ))} 
-      </ul> 
-      <p style={{ fontSize: '12px', marginTop: '40px' }}> 
-        Movie data powered by <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDb</a>. 
-      </p> 
-    </section> 
-  ); 
-} 
+          ))} 
+        </div>
+      </div>  
+    )}
+  </div> 
+); 
   
 // Main App Component 
 function App() { 
   const [movies, setMovies] = useState([]); 
   
   const handleAddMovie = (newMovie) => { 
-    const movieWithExtras = {
-      ...newMovie,
-    watched: false,
-    userRating: 0
+    const movieWithExtras = { 
+      ...newMovie, 
+      watched: false, 
+      userRating: 0 
+    }; 
+    setMovies((prevMovies) => [...prevMovies, movieWithExtras]); 
   }; 
-  setMovies((prevMovies) => [...prevMovies, movieWithExtras]);
-};
-// Movie watched and user rating
+  
   const toggleWatched = (id) => 
     setMovies(movies.map(movie => movie.id === id ? { ...movie, watched: !movie.watched } : movie)); 
+  
   const setUserRating = (id, rating) => 
     setMovies(movies.map(movie => movie.id === id ? { ...movie, userRating: rating } : movie)); 
   
-  return (
+  const deleteMovie = (id) => 
+    setMovies(movies.filter(movie => movie.id !== id)); 
+  
+  return ( 
     <Router> 
-      <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', backgroundColor: '#121212', color: '#ffffff', minHeight: '100vh' }}> 
+      <div style={{ 
+        padding: '40px', 
+        fontFamily: 'Arial, sans-serif', 
+        backgroundColor: '#121212', 
+        color: '#ffffff',
+        minHeight: '100vh' 
+      }}> 
         <Navigation /> 
         <Routes> 
-          <Route path="/" element={<StreamList onAdd={handleAddMovie} movies={movies} onToggleWatched={toggleWatched} onRateMovie={setUserRating} />} /> 
+          <Route 
+            path="/" 
+            element={ 
+              <StreamList 
+                onAdd={handleAddMovie} 
+                movies={movies} 
+                onToggleWatched={toggleWatched} 
+                onRateMovie={setUserRating} 
+                onDelete={deleteMovie} 
+              /> 
+            } 
+          /> 
           <Route path="/movies" element={<Movies />} /> 
           <Route path="/cart" element={<Cart />} /> 
           <Route path="/about" element={<About />} /> 

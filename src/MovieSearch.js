@@ -1,32 +1,30 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState } from 'react'; 
   
 function MovieSearch({ onAdd }) { 
   const [query, setQuery] = useState(''); 
-  const [suggestions, setSuggestions] = useState([]); 
+  const [results, setResults] = useState([]); 
+  const [searchSubmitted, setSearchSubmitted] = useState(false); 
   
-  useEffect(() => { 
-    if (query.length < 2) { 
-      setSuggestions([]); 
+  const handleSearch = async () => { 
+    if (query.trim().length < 2) { 
+      setResults([]); 
       return; 
     } 
   
-    const fetchSuggestions = async () => { 
-      const apiKey = '29fb921b66c65cf64bb69b8e8ff89ca9'; // Replace with your actual TMDB API key 
-      const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=en-US`; 
+    const apiKey = '29fb921b66c65cf64bb69b8e8ff89ca9'; 
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`; 
   
-      try { 
-        const res = await fetch(url); 
-        const data = await res.json(); 
-        setSuggestions(data.results.slice(0, 5)); 
-      } catch (err) { 
-        console.error('Error fetching movie suggestions:', err); 
-      } 
-    }; 
+    try { 
+      const res = await fetch(url); 
+      const data = await res.json(); 
+      setResults(data.results.slice(0, 5)); 
+      setSearchSubmitted(true); 
+    } catch (err) { 
+      console.error('Error fetching movie data:', err); 
+    } 
+  }; 
   
-    fetchSuggestions(); 
-  }, [query]); 
-  
-  const handleSelect = (movie) => { 
+  const handleAdd = (movie) => { 
     const posterUrl = movie.poster_path 
       ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` 
       : null; 
@@ -37,50 +35,89 @@ function MovieSearch({ onAdd }) {
       poster: posterUrl, 
       tmdbRating: movie.vote_average, 
       watched: false, 
-      userRating: 0, 
+      userRating: 0 
     }; 
-  
+  // Search
     onAdd(newMovie); 
     setQuery(''); 
-    setSuggestions([]); 
+    setResults([]); 
+    setSearchSubmitted(false); 
   }; 
+  // Edit search
+  const handleEditSearch = () => { 
+    setSearchSubmitted(false); 
+  }; 
+// Enter key to search
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+        handleSearch();
+    }
+  };
   
   return ( 
-    <div style={{ marginBottom: '20px', position: 'relative' }}> 
-      <input 
-        type="text" 
-        placeholder="Search for movies..." 
-        value={query} 
-        onChange={(e) => setQuery(e.target.value)} 
-        style={{ padding: '8px', width: '300px', borderRadius: '4px', border: '1px solid #ccc' }} 
-      /> 
-      {suggestions.length > 0 && ( 
-        <ul style={{ 
-          listStyle: 'none', 
-          padding: 0, 
-          marginTop: '8px', 
-          background: '#1e1e1e', 
-          color: '#ffffff', 
-          border: '1px solid #ccc', 
-          width: '300px', 
-          position: 'absolute', 
-          zIndex: 10, 
-          borderRadius: '4px' 
-        }}> 
-          {suggestions.map((movie) => ( 
-            <li 
-              key={movie.id} 
-              onClick={() => handleSelect(movie)} 
-              style={{ 
-                padding: '8px', 
-                cursor: 'pointer', 
-                borderBottom: '1px solid #333' 
-              }} 
-            > 
-              {movie.title} 
-            </li> 
-          ))} 
-        </ul> 
+    <div style={{ marginBottom: '20px' }}> 
+      {!searchSubmitted ? ( 
+        <> 
+          <input 
+            type="text" 
+            placeholder="Search for movies..." 
+            value={query} 
+            onChange={(e) => setQuery(e.target.value)} 
+            onKeyDown={handleKeyDown}
+            style={{ padding: '8px', width: '300px', marginRight: '10px' }} 
+          /> 
+          <button onClick={handleSearch} style={{ padding: '8px 12px' }}> 
+            Submit 
+          </button> 
+        </> 
+      ) : ( 
+        <> 
+          <button onClick={handleEditSearch} style={{ padding: '8px 12px', marginBottom: '10px' }}> 
+            <i className="fas fa-edit"></i> Edit Search 
+          </button> 
+  
+          {results.length > 0 && ( 
+            <ul style={{ listStyle: 'none', padding: 0 }}> 
+              {results.map((movie) => ( 
+                <li key={movie.id} style={{ 
+                  display: 'flex',
+                  alignItems: 'center', 
+                  marginBottom: '20px', 
+                  backgroundColor: '#1e1e1e', 
+                  padding: '10px', 
+                  borderRadius: '8px' 
+                }}> 
+                  {movie.poster_path && ( 
+                    <img 
+                      src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} 
+                      alt={movie.title} 
+                      style={{ width: '80px', height: '120px', marginRight: '16px', borderRadius: '4px' }} 
+                    /> 
+                  )} 
+                  <div style={{ flex: 1 }}> 
+                    <h3 style={{ margin: 0 }}>{movie.title}</h3> 
+                    <p style={{ margin: '4px 0', fontSize: '0.9em', color: '#ccc' }}> 
+                      TMDb Rating: {movie.vote_average} / 10 
+                    </p> 
+                  </div> 
+                  <button 
+                    onClick={() => handleAdd(movie)} 
+                    style={{ 
+                      backgroundColor: '#4caf50', 
+                      color: '#fff', 
+                      border: 'none', 
+                      padding: '8px 12px', 
+                      borderRadius: '4px', 
+                      cursor: 'pointer' 
+                    }} 
+                  > 
+                    <i className="fas fa-plus"></i> Add 
+                  </button> 
+                </li> 
+              ))} 
+            </ul> 
+          )} 
+        </> 
       )} 
     </div> 
   ); 
