@@ -1,5 +1,5 @@
 // App.js 
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'; 
 import MovieSearch from './MovieSearch'; 
   
@@ -123,8 +123,13 @@ const StreamList = ({ onAdd, movies, onToggleWatched, onRateMovie, onDelete }) =
   
 // Main App Component 
 function App() { 
-  const [movies, setMovies] = useState([]); 
-  
+  const [movies, setMovies] = useState(() => {
+  const stored = localStorage.getItem('streamlist-movies')
+  return stored ? JSON.parse(stored) :[];
+  });
+  useEffect(() => {
+  localStorage.setItem('streamlist-movies', JSON.stringify(movies));
+  });
   const handleAddMovie = (newMovie) => { 
     const movieWithExtras = { 
       ...newMovie, 
