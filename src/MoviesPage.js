@@ -4,8 +4,7 @@ import MovieSearch from './MovieSearch';
   
 const MoviesPage = ({ onAdd, movies, onToggleWatched, onRateMovie, onDelete }) => ( 
   <div> 
-    <h1 style={{ textAlign: 'center', fontSize: '3rem', marginBottom: '30px' }}>StreamList</h1> 
-    <h2 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '20px' }}>🎬 Movie Finder</h2> 
+    <h1 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '20px' }}>🎬 Movie Finder</h1> 
   
     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}> 
       <MovieSearch onAdd={onAdd} /> 

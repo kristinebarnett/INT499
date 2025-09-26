@@ -14,7 +14,8 @@ const Dashboard = ({ movies }) => {
   
   return ( 
     <div> 
-      <h1 style={{ fontSize: '2.5rem' }}>Dashboard</h1> 
+        <h1 style={{ textAlign: 'center', fontSize: '3rem', marginBottom: '30px' }}>StreamList</h1> 
+      <h2 style={{ fontSize: '2.5rem' }}>Dashboard</h2> 
       <p>Welcome Back!</p> 
       <p>Your Subscription: <strong>Premium</strong> | Next billing date: <strong>Sept 30, 2025</strong></p> 
   
